@@ -30,26 +30,18 @@ const app = express()
 
 app.enable("trust proxy")
 
-const allowedOrigins = process.env.ALLOWED_ORIGINS
-  ? process.env.ALLOWED_ORIGINS.split(",")
-  : [];
+const allowedOrigins = [
+  process.env.FRONTEND_URL_1,
+  process.env.FRONTEND_URL_2,
+  // process.env.FRONTEND_URL_3,
+  // process.env.FRONTEND_URL_4
+];
 
 
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      if (!origin) return callback(null, true);
-
-      if (allowedOrigins.indexOf(origin) === -1) {
-        const msg =
-          "The CORS policy for this site does not allow access from the specified Origin.";
-        return callback(new Error(msg), false);
-      }
-      return callback(null, true);
-    },
-    credentials: true,
-  }),
-)
+app.use(cors({
+  origin: allowedOrigins,
+  credentials: true,
+}));
 
 app.options("*", cors())
 
