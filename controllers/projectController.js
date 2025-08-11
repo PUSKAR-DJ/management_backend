@@ -9,7 +9,7 @@ exports.createProject = catchAsync(async (req, res, next) => {
     res.status(201).json({
         status: 'success',
         data: {
-            data: doc
+            project: doc
         }
     });
 });
@@ -17,9 +17,7 @@ exports.createProject = catchAsync(async (req, res, next) => {
 
 exports.getAllProjects = catchAsync(async (req, res, next) => {
     let filter = {};
-    if (req.user.role === 'manager') {
-        filter = { manager: req.user.id };
-    } else if (req.user.role === 'team_lead') {
+    if (req.user.role === 'manager' || req.user.role === 'team_lead') {
         filter = { manager: req.user.id };
     }
 
@@ -29,7 +27,7 @@ exports.getAllProjects = catchAsync(async (req, res, next) => {
         status: 'success',
         results: doc.length,
         data: {
-            data: doc
+            projects: doc
         }
     });
 });
@@ -67,7 +65,7 @@ exports.getProject = catchAsync(async (req, res, next) => {
     res.status(200).json({
         status: 'success',
         data: {
-            data: doc
+            project: doc
         }
     });
 });
@@ -79,7 +77,6 @@ exports.updateProject = catchAsync(async (req, res, next) => {
         return next(new AppError('No document found with that ID', 404));
     }
 
-    // Only the project's manager can update the project
     if (doc.manager.id.toString() !== req.user.id.toString()) {
          return next(new AppError('You do not have permission to update this resource', 403));
     }
@@ -100,7 +97,7 @@ exports.updateProject = catchAsync(async (req, res, next) => {
     res.status(200).json({
         status: 'success',
         data: {
-            data: doc
+            project: doc
         }
     });
 });
