@@ -5,6 +5,8 @@
 
 * **GET** /api/auth/logout - User logout.
 
+<!-- Allows for manager too -->
+
 ## Users (Protected)
 * **GET** /api/users/me - * **GET** current user's profile.
 
