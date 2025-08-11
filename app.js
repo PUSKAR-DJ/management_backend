@@ -31,7 +31,7 @@ const app = express()
 app.enable("trust proxy")
 
 const allowedOrigins = [
-  process.env.FRONTEND_URL_1,
+  'http://localhost:5173',
   process.env.FRONTEND_URL_2,
   // process.env.FRONTEND_URL_3,
   // process.env.FRONTEND_URL_4
