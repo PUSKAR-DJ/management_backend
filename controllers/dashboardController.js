@@ -12,11 +12,11 @@ exports.getDashboardStats = catchAsync(async (req, res, next) => {
     let upcomingProjects = [];
 
     if(userRole == "manager"){
-        const totalProjects = await Project.countDocuments({ manager: managerId });
-        const currentProjects = await Project.countDocuments({ manager: managerId, status: 'Current' });
-        const completedProjects = await Project.countDocuments({ manager: managerId, status: 'Completed' });
-        const remainingProjects = await Project.countDocuments({ manager: managerId, status: { $in: ['Pending', 'Delayed'] } });
-        const delayedProjects = await Project.countDocuments({ manager: managerId, status: 'Delayed' });
+        const totalProjects = await Project.countDocuments({ manager: userId });
+        const currentProjects = await Project.countDocuments({ manager: userId, status: 'Current' });
+        const completedProjects = await Project.countDocuments({ manager: userId, status: 'Completed' });
+        const remainingProjects = await Project.countDocuments({ manager: userId, status: { $in: ['Pending', 'Delayed'] } });
+        const delayedProjects = await Project.countDocuments({ manager: userId, status: 'Delayed' });
 
         const totalEmployees = await User.countDocuments({ active: true, role: { $ne: 'manager' } });
         const totalTls = await User.countDocuments({ active: true, role: 'team_lead' });
@@ -27,7 +27,7 @@ exports.getDashboardStats = catchAsync(async (req, res, next) => {
 
         const incomeStats = await Project.aggregate([
             {
-                $match: { manager: managerId, status: 'Completed' }
+                $match: { manager: userId, status: 'Completed' }
             },
             {
                 $group: {
@@ -43,7 +43,7 @@ exports.getDashboardStats = catchAsync(async (req, res, next) => {
         const lastMonthIncomeStats = await Project.aggregate([
             {
                 $match: {
-                    manager: managerId,
+                    manager: userId,
                     status: 'Completed',
                     completionDate: { $gte: lastMonth }
                 }
