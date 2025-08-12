@@ -42,7 +42,7 @@ const validateRefId = (role, refId) => {
 }
 
 exports.signup = catchAsync(async (req, res, next) => {
-  const { name, email, password, passwordConfirm, role, refId } = req.body
+  const { name, email, password, passwordConfirm, role, refId, department } = req.body
 
   // Validate reference ID
   if (!validateRefId(role, refId)) {
@@ -62,6 +62,7 @@ exports.signup = catchAsync(async (req, res, next) => {
     passwordConfirm,
     role,
     refId,
+    department
   })
 
   createSendToken(newUser, 201, req, res)

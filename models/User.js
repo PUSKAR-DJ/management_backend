@@ -46,6 +46,11 @@ const userSchema = new mongoose.Schema(
       enum: ["manager", "team_lead", "executive"],
       default: "executive",
     },
+    department: {
+      type: String,
+      enum: ['sales', 'management'],
+      required: [true, 'Please specify a department'],
+    },
     refId: {
       type: String,
       required: [true, "Reference ID is required for signup"],
