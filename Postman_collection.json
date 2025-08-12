@@ -104,7 +104,8 @@
 					},
 					"response": []
 				}
-			]
+			],
+      "description": "- **Role**: `manager` -> **Ref ID**: `manager`\n    \n- **Role**: `team_lead` -> **Ref ID**: `teamlead`\n    \n- **Role**: `executive` -> **Ref ID**: `executive`"
 		},
 		{
 			"name": "Users (Protected)",
