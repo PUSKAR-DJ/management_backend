@@ -12,11 +12,12 @@ exports.getDashboardStats = catchAsync(async (req, res, next) => {
     let upcomingProjects = [];
 
     if(userRole == "manager"){
-        const totalProjects = await Project.countDocuments({ manager: userId });
-        const currentProjects = await Project.countDocuments({ manager: userId, status: 'Current' });
-        const completedProjects = await Project.countDocuments({ manager: userId, status: 'Completed' });
-        const remainingProjects = await Project.countDocuments({ manager: userId, status: { $in: ['Pending', 'Delayed'] } });
-        const delayedProjects = await Project.countDocuments({ manager: userId, status: 'Delayed' });
+        const managerId = userId; 
+        const totalProjects = await Project.countDocuments({ manager: managerId });
+        const currentProjects = await Project.countDocuments({ manager: managerId, status: 'Current' });
+        const completedProjects = await Project.countDocuments({ manager: managerId, status: 'Completed' });
+        const remainingProjects = await Project.countDocuments({ manager: managerId, status: { $in: ['Pending', 'Delayed'] } });
+        const delayedProjects = await Project.countDocuments({ manager: managerId, status: 'Delayed' });
 
         const totalEmployees = await User.countDocuments({ active: true, role: { $ne: 'manager' } });
         const totalTls = await User.countDocuments({ active: true, role: 'team_lead' });
@@ -27,7 +28,7 @@ exports.getDashboardStats = catchAsync(async (req, res, next) => {
 
         const incomeStats = await Project.aggregate([
             {
-                $match: { manager: userId, status: 'Completed' }
+                $match: { manager: managerId, status: 'Completed' }
             },
             {
                 $group: {
@@ -43,7 +44,7 @@ exports.getDashboardStats = catchAsync(async (req, res, next) => {
         const lastMonthIncomeStats = await Project.aggregate([
             {
                 $match: {
-                    manager: userId,
+                    manager: managerId,
                     status: 'Completed',
                     completionDate: { $gte: lastMonth }
                 }
@@ -90,7 +91,6 @@ exports.getDashboardStats = catchAsync(async (req, res, next) => {
         const completedProjects = await Project.countDocuments({ manager: userId, status: 'Completed' });
         const remainingProjects = await Project.countDocuments({ manager: userId, status: { $in: ['Pending', 'Delayed'] } });
 
-        // upcoming Projects list
         upcomingProjects = await Project.find({ manager: userId, status: { $in: ['Pending', 'Current', 'Delayed'] } })
             .select('companyName invoiceNumber serviceName startDate endDate')
             .sort({ startDate: 1 });
@@ -100,6 +100,22 @@ exports.getDashboardStats = catchAsync(async (req, res, next) => {
             currentProjects,
             completedProjects,
             remainingProjects,
+        };
+    } else if (userRole === 'executive' || userRole === 'executive'){
+        const currentProjects = await Project.countDocuments({ 'tasks.assignedTo': userId, status: 'Current' });
+        const completedProjects = await Project.countDocuments({ 'tasks.assignedTo': userId, status: 'Completed' });
+        const pendingProjects = await Project.countDocuments({ 'tasks.assignedTo': userId, status: 'Pending' });
+
+        const user = await User.findById(userId).select('salaryHistory');
+        const lastMonth = new Date();
+        lastMonth.setMonth(lastMonth.getMonth() - 1);
+        const lastMonthPayment = user.salaryHistory.find(p => new Date(p.paymentDate) >= lastMonth);
+        
+        stats = {
+            currentProjects,
+            completedProjects,
+            pendingProjects,
+            lastMonthIncome: lastMonthPayment ? lastMonthPayment.amount : 0,
         };
     }
 

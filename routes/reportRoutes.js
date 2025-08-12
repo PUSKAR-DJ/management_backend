@@ -5,7 +5,7 @@ const authController = require('../controllers/authController');
 const router = express.Router();
 
 router.use(authController.protect);
-router.use(authController.restrictTo('manager'));
+router.use(authController.restrictTo('manager', 'team_lead'));
 
 router.get('/team-report', reportController.getTeamReport);
 router.get('/team-report/projects/:userId', reportController.getMemberProjects);

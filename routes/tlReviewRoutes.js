@@ -4,9 +4,8 @@ const authController = require('../controllers/authController');
 
 const router = express.Router();
 
-// Protect routes for TL only
 router.use(authController.protect);
-router.use(authController.restrictTo('TL'));
+router.use(authController.restrictTo('team_lead'));
 
 router.get('/', tlReviewController.getFilteredReviews);
 
